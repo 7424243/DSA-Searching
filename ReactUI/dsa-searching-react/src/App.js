@@ -29,8 +29,6 @@ function App() {
       }
       const index = Math.floor((starter + ender)/2);
       const item = DATA[index];
-  
-      console.log(starter, ender);
       if(item == value){
         return `Found ${value} in ${searches} tries`;
       }else if(item < value){
@@ -52,20 +50,15 @@ function App() {
       alert(binarySearch(sortedData, input))
     }
 
-   
-      return (
-        <div className="App">
-      <form onSubmit={handleLinearSubmit}>
-        <label htmlFor='inputData'>Input Data</label>
-        <input id ='numInput' type='text' name='inputData'/>
-        <button type='submit'>Submit</button>
-      </form>
+    return (
+      <div className="App">
+        <form onSubmit={handleLinearSubmit}>
+          <label htmlFor='inputData'>Input Data</label>
+          <input id ='numInput' type='text' name='inputData'/>
+          <button type='submit'>Submit</button>
+        </form>
       </div>
-    );
-    
-    
- 
-
+    )
 }
 
-export default App;
+export default App
