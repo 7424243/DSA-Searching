@@ -77,6 +77,39 @@ A pre-order traversal should give you the following order: 25, 15, 10, 4, 12, 24
 In-order: 4, 10, 12, 15, 18, 22, 24, 25, 31, 35, 44, 50, 66, 70, 90
 Post-order: 4, 12, 10, 22, 18, 24, 15, 31, 44, 35, 66, 90, 70, 50, 25
 */
+class _Node {
+    constructor(value) {
+        this.value = value
+        this.next = null
+    }
+}
+class Queue {
+    constructor() {
+        this.first = null
+        this.last = null
+    }
+    enqueue(data) {
+        const node = new _Node(data)
+        if(this.first === null) {
+            this.first = node
+        }
+        if(this.last) {
+            this.last.next = node
+        }
+        this.last = node
+    }
+    dequeue() {
+        if(this.first === null) {
+            return
+        }
+        const node = this.first
+        this.first = this.first.next
+        if(node === this.last) {
+            this.last = null
+        }
+        return node.value
+    }
+}
 class BinarySearchTree {
     constructor(key = null, value = null, parent = null) {
         this.key = key
@@ -166,6 +199,21 @@ class BinarySearchTree {
             }
         }
     }
+    bfs(values=[]) {
+        const queue = new Queue()
+        queue.enqueue(this)
+        while(queue.length) {
+            const node = queue.dequeue()
+            values.push(node.value)
+            if(node.left) {
+                queue.enqueue(node.left)
+            }
+            if(node.right) {
+                queue.enqueue(node.right)
+            }
+        }
+        return values
+    }
 }
     const bst = new BinarySearchTree()
     bst.insert(25)
@@ -223,3 +271,33 @@ function postOrder(bst) {
 //console.log(preOrder(bst))//output: 25, 15, 10, 4, 12, 24, 18, 22, 50, 35, 31, 44, 70, 66, 90
 //console.log(inOrder(bst))//output: 4, 10, 12, 15, 18, 22, 24, 25, 31, 35, 44, 50, 66, 70, 90
 //console.log(postOrder(bst))//output: 4, 12, 10, 22, 18, 24, 15, 31, 44, 35, 66, 90, 70, 50, 25
+
+/* ===== 6. Find the next commanding officer =====
+Suppose you have a tree representing a command structure of the Starship USS Enterprise.
+
+               5Captain Picard
+             /                \
+    3Commander Riker       6Commander Data
+      /         \               \
+ 2Lt. Cmdr.   4Lt. Cmdr.          8Lt. Cmdr.
+ Worf        LaForge            Crusher
+   /                           /
+1Lieutenant                  7Lieutenant
+security-officer            Selar
+
+This tree is meant to represent who is in charge of lower-ranking officers. For example, Commander Riker is directly responsible for Worf and LaForge. People of the same rank are at the same level in the tree. However, to distinguish between people of the same rank, those with more experience are on the left and those with less on the right (i.e., experience decreases from left to right). Suppose a fierce battle with an enemy ensues. Write a program that will take this tree of commanding officers and outlines the ranking officers in their ranking order so that if officers start dropping like flies, we know who is the next person to take over command.
+*/
+function commandStructure() {
+    const BST = new BinarySearchTree()
+    BST.insert(5, 'Captain Picard')
+    BST.insert(3, 'Commandar Riker')
+    BST.insert(6, 'Commander Data')
+    BST.insert(2, 'Lt. Cmdr. Worf')
+    BST.insert(4, 'Lt. Cmdr. LaForge')
+    BST.insert(8, 'Lt. Cmdr. Crusher')
+    BST.insert(1, 'Lieutenant security-officer')
+    BST.insert(7, 'Lieutenant Selar')
+    return BST.bfs(BST)
+}
+console.log(commandStructure())
+
