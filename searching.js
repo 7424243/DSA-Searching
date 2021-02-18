@@ -51,7 +51,7 @@ function deweySearch(library, ddn, title, start=0, end) {
         return `${currentTitle} found`
     }
     else if(library[middle].ddn > ddn) {
-        return deweySearch(library, ddn, title, start, middle = 1)
+        return deweySearch(library, ddn, title, start, middle + 1)
     }
     else if (library[middle].ddn < ddn) {
         return deweySearch(library, ddn, title, middle + 1, end)
@@ -70,3 +70,156 @@ postorder traversal: 14, 19, 15, 27, 25, 79, 90, 91, 89
 
 pre-order traversal: 8, 6, 5, 7, 10, 9, 11
 */
+
+/* ===== 5. Implement different tree traversals =====
+Using your BinarySearchTree class from your previous lesson, create a binary search tree with the following dataset: 25 15 50 10 24 35 70 4 12 18 31 44 66 90 22. Then implement inOrder(), preOrder(), and postOrder() functions. Test your functions with the following datasets.
+A pre-order traversal should give you the following order: 25, 15, 10, 4, 12, 24, 18, 22, 50, 35, 31, 44, 70, 66, 90
+In-order: 4, 10, 12, 15, 18, 22, 24, 25, 31, 35, 44, 50, 66, 70, 90
+Post-order: 4, 12, 10, 22, 18, 24, 15, 31, 44, 35, 66, 90, 70, 50, 25
+*/
+class BinarySearchTree {
+    constructor(key = null, value = null, parent = null) {
+        this.key = key
+        this.value = value
+        this.parent = parent
+        this.left = null
+        this.right = null
+    }
+    insert(key, value) {
+        if(this.key === null) {
+            this.key = key
+            this.value = value
+        } else if( key < this.key) {
+            if(this.left == null) {
+                this.left = new BinarySearchTree(key, value, this)
+            } else {
+                this.left.insert(key, value)
+            }
+        } else {
+            if(this.right == null) {
+                this.right = new BinarySearchTree(key, value, this)
+            } else {
+                this.right.insert(key, value)
+            }
+        }
+    }
+    find(key) {
+        if(this.key == key) {
+            return this.value
+        } else if(key < this.key && this.left) {
+            return this.left.find(key)
+        } else if(key > this.key && this.right) {
+            return this.right.find(key)
+        } else {
+            throw new Error('key error')
+        }
+    }
+    remove(key) {
+        if(this.key == key) {
+            if(this.left && this.right) {
+                const successor = this.right._findMin()
+                this.key = successor.key
+                this.value = successor.value
+                successor.remove(successor.key)
+            } else if(this.left) {
+                this._replaceWith(this.left)
+            } else if(this.right) {
+                this._replaceWith(this.right)
+            } else {
+                this._replaceWith(null)
+            }
+        } else if(key < this.key && this.left) {
+            this.left.remove(key)
+        } else if(key > this.key && this.right) {
+            this.right.remove(key)
+        } else {
+            throw new Error('key error')
+        }
+    }
+    _findMin() {
+        if(!this.left) {
+            return this
+        }
+        return this.left._findMin()
+    }
+    _replaceWith(node) {
+        if(this.parent) {
+            if(this == this.parent.left) {
+                this.parent.left = node
+            } else if(this == this.parent.right) {
+                this.parent.right = node
+            }
+            if(node) {
+                node.parent = this.parent
+            }
+        } else {
+            if(node) {
+                this.key = node.key
+                this.value = node.value
+                this.left = node.left
+                this.right = node.right
+            } else {
+                this.key = null
+                this.value = null
+                this.left = null
+                this.right = null
+            }
+        }
+    }
+}
+    const bst = new BinarySearchTree()
+    bst.insert(25)
+    bst.insert(15)
+    bst.insert(50)
+    bst.insert(10)
+    bst.insert(24)
+    bst.insert(35)
+    bst.insert(70)
+    bst.insert(4)
+    bst.insert(12)
+    bst.insert(18)
+    bst.insert(31)
+    bst.insert(44)
+    bst.insert(66)
+    bst.insert(90)
+    bst.insert(22)
+    
+function preOrder(bst) {
+    if(bst === null) {
+        return
+    }
+    console.log(bst.key)
+    if(bst.left) {
+        preOrder(bst.left)
+    }
+    if(bst.right) {
+        preOrder(bst.right)
+    }
+}
+function inOrder(bst) {
+    if(bst === null) {
+        return
+    }
+    if(bst.left) {
+        inOrder(bst.left)
+    }
+    console.log(bst.key)
+    if(bst.right) {
+        inOrder(bst.right)
+    }
+}
+function postOrder(bst) {
+    if(bst === null) {
+        return
+    }
+    if(bst.left) {
+        postOrder(bst.left)
+    }
+    if(bst.right) {
+        postOrder(bst.right)
+    }
+    console.log(bst.key)
+}
+//console.log(preOrder(bst))//output: 25, 15, 10, 4, 12, 24, 18, 22, 50, 35, 31, 44, 70, 66, 90
+//console.log(inOrder(bst))//output: 4, 10, 12, 15, 18, 22, 24, 25, 31, 35, 44, 50, 66, 70, 90
+//console.log(postOrder(bst))//output: 4, 12, 10, 22, 18, 24, 15, 31, 44, 35, 66, 90, 70, 50, 25
